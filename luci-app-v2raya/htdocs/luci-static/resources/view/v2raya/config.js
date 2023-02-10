@@ -20,13 +20,6 @@ var callServiceList = rpc.declare({
 	expect: { '': {} }
 });
 
-var callInitAction = rpc.declare({
-	object: 'luci',
-	method: 'setInitAction',
-	params: ['name', 'action'],
-	expect: { result:false }
-});
-
 function getServiceStatus() {
 	return L.resolveDefault(callServiceList('v2raya'), {}).then(function (res) {
 		var isRunning = false;
@@ -76,15 +69,6 @@ return view.extend({
 		return Promise.all([
 			uci.load('v2raya')
 		]);
-	},
-
-	handleSaveApply: function(ev, mode) {
-		return this.handleSave(ev).then(function() {
-			classes.ui.changes.apply(mode == '0');
-			callInitAction('v2raya', 'disable').then(function() {
-				callInitAction('v2raya', 'restart');
-			});
-		})
 	},
 
 	render: function(data) {
