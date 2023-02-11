@@ -1,0 +1,16 @@
+<%+header%>
+<div class="cbi-map">
+<iframe id="oc-editor" style="width: 100%; min-height: 100vh; border: none; border-radius: 2px;"></iframe>
+</div>
+<script type="text/javascript">
+        if (navigator.onLine) {
+            // window.open("oc-editor_online.php");
+			document.getElementById("oc-editor").src = window.location.protocol + "//" + window.location.host + "/oc-editor/oc-editor_online.php";
+            console.log("oc-editor_log: Network available, using online resource.");
+        } else {
+            // window.open("oc-editor.php");
+			document.getElementById("oc-editor").src = window.location.protocol + "//" + window.location.host + "/oc-editor/oc-editor.php";
+			console.log("oc-editor_log: Network unavailable, using offline resource.");
+        };
+</script>
+<%+footer%>
