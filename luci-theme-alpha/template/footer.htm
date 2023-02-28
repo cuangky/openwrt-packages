@@ -20,13 +20,13 @@
 
 <% local ver = require "luci.version" %>
 	</div>
-	<footer class="mobile-hide">
-	<a href="https://github.com/openwrt/luci">Powered by <%= ver.luciname %> (<%= ver.luciversion %>)</a> / <%= ver.distversion %>
+	<footer class="mobile">
+	<a href="https://github.com/openwrt/luci"><%= ver.luciname %> | <%= ver.luciversion %></a>
 	</footer>
 	</div>
 </div>
 
-<script type="text/javascript">L.require('menu-material')</script>
+<script type="text/javascript">L.require('menu-alpha')</script>
 <script src="<%=media%>/app.js"></script>
 
 </body>
