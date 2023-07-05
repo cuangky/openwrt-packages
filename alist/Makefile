@@ -7,13 +7,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=alist
-PKG_VERSION:=3.19.0
-PKG_WEB_VERSION:=3.19.0
+PKG_VERSION:=3.20.0
+PKG_WEB_VERSION:=3.20.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/alist-org/alist/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=77080f88dc789253c46efaf7adc141a9d7250d477653db7270941b35d14f82ab
+PKG_HASH:=657801b4e785e79f2d6ce861390e7c451caabc17d287a9f5f9a90265400e9f4e
 
 PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILE:=LICENSE
@@ -23,7 +23,7 @@ define Download/$(PKG_NAME)-web
   FILE:=$(PKG_NAME)-web-$(PKG_WEB_VERSION).tar.gz
   URL_FILE:=dist.tar.gz
   URL:=https://github.com/alist-org/alist-web/releases/download/$(PKG_WEB_VERSION)/
-  HASH:=50b0bf763554755c673994746162836e0d95e08ab8fa8fcebf7c127a4129aeaf
+  HASH:=1da2359dda672c804bd0089e95f55270959b7a24235d6dbeed8c1e1a855edf5b
 endef
 
 PKG_BUILD_DEPENDS:=golang/host
