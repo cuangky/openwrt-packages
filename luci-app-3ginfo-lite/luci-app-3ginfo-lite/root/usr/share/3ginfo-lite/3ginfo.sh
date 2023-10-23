@@ -6,6 +6,7 @@
 # (c) 2021-2023 modified by Rafał Wabik - IceG - From eko.one.pl forum
 #
 
+
 band() {
 # see https://en.wikipedia.org/wiki/LTE_frequency_bands
 	echo -n "B${1}"
@@ -48,6 +49,7 @@ band() {
 		"50") echo " (1500 MHz)";;
 		"51") echo " (1500 MHz)";;
 		"53") echo " (2400 MHz)";;
+		"54") echo " (1600 MHz)";;
 		"65") echo " (2100 MHz)";;
 		"66") echo " (1700 MHz)";;
 		"67") echo " (700 MHz)";;
@@ -63,6 +65,7 @@ band() {
 		"87") echo " (410 MHz)";;
 		"88") echo " (410 MHz)";;
 		"103") echo " (700 MHz)";;
+		"106") echo " (900 MHz)";;
 		"*") echo "";;
 	esac
 }
@@ -75,8 +78,8 @@ band5g() {
 		"2") echo " (1900 MHz)";;
 		"3") echo " (1800 MHz)";;
 		"5") echo " (850 MHz)";;
-		"6") echo " (2600 MHz)";;
-		"7") echo " (900 MHz)";;
+		"7") echo " (2600 MHz)";;
+		"8") echo " (900 MHz)";;
 		"12") echo " (700 MHz)";;
 		"13") echo " (700 MHz)";;
 		"14") echo " (700 MHz)";;
@@ -95,10 +98,11 @@ band5g() {
 		"41") echo " (2500 MHz)";;
 		"46") echo " (5200 MHz)";;
 		"47") echo " (5900 MHz)";;
-		"47") echo " (3500 MHz)";;
+		"48") echo " (3500 MHz)";;
 		"50") echo " (1500 MHz)";;
 		"51") echo " (1500 MHz)";;
 		"53") echo " (2400 MHz)";;
+		"54") echo " (1600 MHz)";;
 		"65") echo " (2100 MHz)";;
 		"66") echo " (1700/2100 MHz)";;
 		"67") echo " (700 MHz)";;
@@ -242,23 +246,21 @@ else
 fi
 
 # COPS numeric
+COPS=""
+COPS_MCC=""
+COPS_MNC=""
 COPS_NUM=$(echo "$O" | awk -F[\"] '/^\+COPS: .,2/ {print $2}')
-if [ "x$COPS_NUM" = "x" ]; then
-	COPS_NUM=""
-	COPS_MCC=""
-	COPS_MNC=""
-else
+if [ -n "$COPS_NUM" ]; then
 	COPS_MCC=${COPS_NUM:0:3}
 	COPS_MNC=${COPS_NUM:3:3}
-	COPS=$(awk -F[\;] '/'$COPS_NUM'/ {print $2}' $RES/mccmnc.dat)
 fi
-[ "x$COPS" = "x" ] && COPS=$COPS_NUM
 
 if [ -z "$FORCE_PLMN" ]; then
-	# COPS alphanumeric
-	T=$(echo "$O" | awk -F[\"] '/^\+COPS: .,0/ {print $2}')
-	[ "x$T" != "x" ] && COPS="$T"
+	COPS=$(echo "$O" | awk -F[\"] '/^\+COPS: .,0/ {print $2}')
+else
+	[ -n "$COPS_NUM" ] && COPS=$(awk -F[\;] '/^'$COPS_NUM';/ {print $2}' $RES/mccmnc.dat)
 fi
+[ -z "$COPS" ] && COPS=$COPS_NUM
 
 COPZ=$(echo $COPS | sed ':s;s/\(\<\S*\>\)\(.*\)\<\1\>/\1\2/g;ts')
 COPS=$(echo $COPZ | awk '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1')

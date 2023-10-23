@@ -1,0 +1,9 @@
+#!/bin/sh -x
+
+if [ ! -f /etc/config/smstools3 ]; then
+        touch /etc/config/smstools3
+        uci add smstools3 sms
+	uci add smstools3 root_phone
+	uci add smstools3 command
+	uci commit smstools3
+fi

@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=v2rayA
-PKG_VERSION:=2.0.5
-PKG_RELEASE:=1
+PKG_VERSION:=2.2.4
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/v2rayA/v2rayA/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=a454f382bf199f939e4930c1ee260b212ad66e04fa5dcf9065bb92dd2be274fe
+PKG_HASH:=844da2a4c1ac1f7eae02519a0833255a63938f08a554cbea043606b28ee6ebed
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/service
 
 PKG_LICENSE:=AGPL-3.0-only
@@ -19,7 +19,7 @@ PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
-PKG_USE_MIPS16:=0
+PKG_BUILD_FLAGS:=no-mips16
 
 GO_PKG:=github.com/v2rayA/v2rayA
 GO_PKG_LDFLAGS_X:= \
@@ -51,12 +51,12 @@ define Package/v2raya/conffiles
 /etc/config/v2raya
 endef
 
-WEB_FILE:=$(PKG_NAME)-web-$(PKG_VERSION).tar.gz
+WEB_FILE:=$(PKG_NAME)-web-$(PKG_VERSION).zip
 define Download/v2raya-web
-	URL:=https://codeload.github.com/v2rayA/v2raya-web/tar.gz/v$(PKG_VERSION)?
-	URL_FILE:=$(WEB_FILE)
+	URL:=https://github.com/v2rayA/v2rayA/releases/download/v$(PKG_VERSION)/
+	URL_FILE:=web.zip
 	FILE:=$(WEB_FILE)
-	HASH:=e0460ea4b251339258e037712dc7d7426e2929ce592becbd2182facaedbe7b81
+	HASH:=2699dacdf39137af408a9ffcb91734e5af487bef4dccaa51f1bb3de6c4d3e8fe
 endef
 
 GO_PKG_TARGET_VARS:=$(filter-out CGO_ENABLED=%,$(GO_PKG_TARGET_VARS)) CGO_ENABLED=0
@@ -66,7 +66,7 @@ define Build/Prepare
 
 	( \
 		mkdir -p $(PKG_BUILD_DIR)/server/router/web ; \
-		gzip -dc $(DL_DIR)/$(WEB_FILE) | $(HOST_TAR) -C $(PKG_BUILD_DIR)/server/router/web $(TAR_OPTIONS) ; \
+		unzip -q -d $(PKG_BUILD_DIR)/server/router/web $(DL_DIR)/$(WEB_FILE) ; \
 	)
 endef
 

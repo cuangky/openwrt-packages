@@ -7,13 +7,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=alist
-PKG_VERSION:=3.20.0
-PKG_WEB_VERSION:=3.20.0
-PKG_RELEASE:=1
+PKG_VERSION:=3.28.0
+PKG_WEB_VERSION:=3.28.0
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/alist-org/alist/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=657801b4e785e79f2d6ce861390e7c451caabc17d287a9f5f9a90265400e9f4e
+PKG_HASH:=7944c1ac07c5cad71e84f6087fba1bc28dd552b220f479bc38369455e38d93d4
 
 PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILE:=LICENSE
@@ -23,19 +23,19 @@ define Download/$(PKG_NAME)-web
   FILE:=$(PKG_NAME)-web-$(PKG_WEB_VERSION).tar.gz
   URL_FILE:=dist.tar.gz
   URL:=https://github.com/alist-org/alist-web/releases/download/$(PKG_WEB_VERSION)/
-  HASH:=1da2359dda672c804bd0089e95f55270959b7a24235d6dbeed8c1e1a855edf5b
+  HASH:=62f7163f4651762d92da84d4eec51f4246cdb4841c1e7082ad0da1cacb0c2a00
 endef
 
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
+PKG_BUILD_FLAGS:=no-mips16
 
-PKG_ALIST:=github.com/alist-org/alist/v3/internal/conf
 GO_PKG:=github.com/alist-org/alist
 GO_PKG_LDFLAGS:=-w -s
 GO_PKG_LDFLAGS_X:= \
-	$(PKG_ALIST).Version=v$(PKG_VERSION)-$(ARCH) \
-	$(PKG_ALIST).WebVersion=$(PKG_WEB_VERSION)
+	$(GO_PKG)/v3/internal/conf.Version=v$(PKG_VERSION)-$(ARCH) \
+	$(GO_PKG)/v3/internal/conf.WebVersion=$(PKG_WEB_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
@@ -46,12 +46,16 @@ define Package/$(PKG_NAME)
   SUBMENU:=Web Servers/Proxies
   TITLE:=A file list program that supports multiple storage
   URL:=https://alist-doc.nn.ci/
-  DEPENDS:=$(GO_ARCH_DEPENDS)
+  DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
 endef
 
 define Package/$(PKG_NAME)/description
   A file list program that supports multiple storage, powered by Gin and Solidjs.
 endef
+
+ifneq ($(CONFIG_USE_MUSL),)
+  TARGET_CFLAGS += -D_LARGEFILE64_SOURCE
+endif
 
 define Build/Prepare
 	$(call Build/Prepare/Default)
