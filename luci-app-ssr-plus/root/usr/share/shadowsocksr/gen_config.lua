@@ -23,7 +23,6 @@ function vmess_vless()
 				users = {
 					{
 						id = server.vmess_id,
-						alterId = (server.v2ray_protocol == "vmess" or not server.v2ray_protocol) and tonumber(server.alter_id) or nil,
 						security = (server.v2ray_protocol == "vmess" or not server.v2ray_protocol) and server.security or nil,
 						encryption = (server.v2ray_protocol == "vless") and server.vless_encryption or nil,
 						flow = ((server.tls == '1') or (server.reality == '1')) and server.tls_flow or nil
@@ -126,38 +125,7 @@ local Xray = {
 		port = tonumber(local_port),
 		protocol = "dokodemo-door",
 		settings = {network = proto, followRedirect = true},
-		sniffing = {
-			enabled =  (server.custom_sniffing == "1") and true or false,
-			routeOnly = (server.custom_routeOnly == "1") and true or false,
-			destOverride = {"http", "tls", "quic"},
-			domainsExcluded = (server.custom_domainsExcluded == "1") and {
-				"courier.push.apple.com",
-				"rbsxbxp-mim.vivox.com",
-				"rbsxbxp.www.vivox.com",
-				"rbsxbxp-ws.vivox.com",
-				"rbspsxp.www.vivox.com",
-				"rbspsxp-mim.vivox.com",
-				"rbspsxp-ws.vivox.com",
-				"rbswxp.www.vivox.com",
-				"rbswxp-mim.vivox.com",
-				"disp-rbspsp-5-1.vivox.com",
-				"disp-rbsxbp-5-1.vivox.com",
-				"proxy.rbsxbp.vivox.com",
-				"proxy.rbspsp.vivox.com",
-				"proxy.rbswp.vivox.com",
-				"rbswp.vivox.com",
-				"rbsxbp.vivox.com",
-				"rbspsp.vivox.com",
-				"rbspsp.www.vivox.com",
-				"rbswp.www.vivox.com",
-				"rbsxbp.www.vivox.com",
-				"rbsxbxp.vivox.com",
-				"rbspsxp.vivox.com",
-				"rbswxp.vivox.com",
-				"Mijia Cloud",
-				"dlg.io.mi.com"
-			} or nil,
-		}
+		sniffing = {enabled = true, destOverride = {"http", "tls"}}
 	} or nil,
 	-- 开启 socks 代理
 	inboundDetour = (proto:find("tcp") and socks_port ~= "0") and {
@@ -188,6 +156,7 @@ local Xray = {
 				} or nil
 			} or nil,
 			realitySettings = (server.reality == '1') and {
+				show = false,
 				publicKey = server.reality_publickey,
 				shortId = server.reality_shortid,
 				spiderX = server.reality_spiderx,
@@ -206,7 +175,6 @@ local Xray = {
 				}
 			} or nil,
 			kcpSettings = (server.transport == "kcp") and {
-				-- kcp
 				mtu = tonumber(server.mtu),
 				tti = tonumber(server.tti),
 				uplinkCapacity = tonumber(server.uplink_capacity),
@@ -248,19 +216,12 @@ local Xray = {
 				health_check_timeout = tonumber(server.health_check_timeout) or nil,
 				permit_without_stream = (server.permit_without_stream == "1") and true or nil,
 				initial_windows_size = tonumber(server.initial_windows_size) or nil
-			} or nil,
-			sockopt = {
-				tcpMptcp = (server.mptcp == "1") and true or false,
-				tcpNoDelay = (server.mptcp == "1") and true or false,
-				tcpcongestion = server.custom_tcpcongestion
-			}
+			} or nil
 		},
-		mux = (server.mux == "1") and {
+		mux = (server.mux == "1" and server.transport ~= "grpc") and {
 			-- mux
 			enabled = true,
-			concurrency = tonumber(server.concurrency),
-			xudpConcurrency = tonumber(server.xudpConcurrency),
-			xudpProxyUDP443 = server.xudpProxyUDP443
+			concurrency = tonumber(server.concurrency)
 		} or nil
 	} or nil
 }
@@ -317,7 +278,7 @@ local ss = {
 	reuse_port = true
 }
 local hysteria = {
-	server = (server.port_range and (server.server .. ":" .. server.port_range)) or (server.server_port and (server.server .. ":" .. server.server_port)),
+	server = server.server_port and (server.server .. ":" .. server.server_port) or (server.server .. ":" .. server.port_range),
 	bandwidth = {
 	up = tonumber(server.uplink_capacity) and tonumber(server.uplink_capacity) .. " mbps" or nil,
 	down = tonumber(server.downlink_capacity) and tonumber(server.downlink_capacity) .. " mbps" or nil 
@@ -329,7 +290,7 @@ local hysteria = {
 	transport = {
 		type = server.transport_protocol,
 		udp = { 
-			hopInterval = tonumber(server.hopinterval) and tonumber(server.hopinterval) .. "s" or "30s"
+			hopInterval = tonumber(server.hopinterval) and tonumber(server.hopinterval) .. "s" or nil
 		}
 	},
 --[[			
@@ -359,7 +320,6 @@ local hysteria = {
 	auth = server.hy2_auth,
 	tls = (server.tls_host) and {
 		sni = server.tls_host,
-		alpn = server.tls_alpn or nil,
 		insecure = (server.insecure == "1") and true or false,
 		pinSHA256 = (server.insecure == "1") and server.pinsha256 or nil
 	} or {
